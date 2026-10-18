@@ -1,0 +1,120 @@
+# Ante Risk Register
+
+This register supports the [project plan](project_plan.md). Update it whenever a risk, trigger, score, or response changes.
+
+- **Register Owner:** Jurijs
+- **Last Updated:** 2026-10-18
+- **Review Frequency:** Weekly; at each iteration review
+
+## Scoring Key
+
+| Score | Rating    | Action                            |
+| ----- | --------- | --------------------------------- |
+| 1-6   | 🟢 Low    | Monitor                           |
+| 8-12  | 🟡 Medium | Actively manage                   |
+| 15-25 | 🔴 High   | Escalate at the next team meeting |
+
+Score = Likelihood (1-5) × Impact (1-5)
+
+## Summary
+
+| ID  | Risk                          |  L  |  I  | Score | Status | Owner     |
+| --- | ----------------------------- | :-: | :-: | :---: | ------ | --------- |
+| R01 | No permitted player data      |  3  |  5  | 🔴 15 | Open   | Jurijs    |
+| R02 | No trustworthy harm proxy     |  4  |  4  | 🔴 16 | Open   | Daniils   |
+| R03 | Future leakage                |  3  |  4  | 🟡 12 | Open   | Volodymyr |
+| R04 | Privacy exposure              |  2  |  5  | 🟡 10 | Open   | Arturs    |
+| R05 | Misleading interpretation     |  3  |  3  | 🟡 9  | Open   | Andrejs   |
+| R06 | Schedule or contribution gaps |  3  |  3  | 🟡 9  | Open   | Jurijs    |
+
+## Risks
+
+### R01 - No permitted player data - 🔴 15
+
+**Category:** Data access · **Owner:** Jurijs · **Status:** Open · **Likelihood:** 3 · **Impact:** 5
+
+The team may not obtain written, applicable permission to use operator player data, leaving no real dataset for analysis.
+
+**Mitigation:**
+
+- [ ] Obtain current wording of customer agreement clauses 3.2, 3.7, and 11.1 (due 2026-10-23)
+- [ ] Document applicability to the specific dataset, purpose, team, and transfer (due 2026-10-23)
+- [ ] Record fields, de-identification method, access list, storage, retention, and deletion rule
+- [ ] Keep the synthetic-data route ready as the fallback deliverable; do not claim external validation
+
+**Trigger:** No written permission or usable public dictionary by the 23 Oct data and label decision.
+**Residual score (after mitigation):** L1 × I5 = 5 🟢
+
+### R02 - No trustworthy harm proxy - 🔴 16
+
+**Category:** Evaluation · **Owner:** Daniils · **Status:** Open · **Likelihood:** 4 · **Impact:** 4
+
+Available labels may not reliably indicate gambling harm, so predictive performance cannot be measured meaningfully.
+
+**Mitigation:**
+
+- [ ] Record whether any label is independently assessed, what it means, who assigned it, and when (due 2026-10-23)
+- [ ] Freeze the outcome definition and holdout plan (due 2026-10-23)
+- [ ] Document selection and uncertainty
+- [ ] If representative labels are absent, limit results to rules/feature feasibility and software scenarios
+
+**Trigger:** Labels absent, self-selected, or inconsistently assessed.
+**Residual score (after mitigation):** L4 × I2 = 8 🟡
+
+### R03 - Future leakage - 🟡 12
+
+**Category:** Technical · **Owner:** Volodymyr · **Status:** Open · **Likelihood:** 3 · **Impact:** 4
+
+Information unavailable at prediction time may leak into features or evaluation, inflating reported performance.
+
+**Mitigation:**
+
+- [ ] Enforce temporal and player-disjoint checks in the pipeline
+- [ ] Review source lineage and the holdout protocol
+
+**Trigger:** Feature after cutoff, label unavailable at evaluation time, or shared train/test players.
+
+### R04 - Privacy exposure - 🟡 10
+
+**Category:** Privacy · **Owner:** Arturs · **Status:** Open · **Likelihood:** 2 · **Impact:** 5
+
+Player-level information could become identifiable through public artifacts, outputs, or repositories.
+
+**Mitigation:**
+
+- [ ] Keep row data in ignored, controlled storage
+- [ ] Aggregate and disclosure-check all outputs before publishing
+
+**Trigger:** Public record, ID, rare trajectory, or individual score.
+
+### R05 - Misleading interpretation - 🟡 9
+
+**Category:** Communication · **Owner:** Andrejs · **Status:** Open · **Likelihood:** 3 · **Impact:** 3
+
+Review scores may be presented or read as clinical diagnosis or proven harm reduction.
+
+**Mitigation:**
+
+- [ ] Use human-review framing and measured proxy language
+- [ ] Hold a critical review of claims before presentation
+
+**Trigger:** Score described as diagnosis, loss, or measured harm reduction.
+
+### R06 - Schedule or contribution gaps - 🟡 9
+
+**Category:** Process · **Owner:** Jurijs · **Status:** Open · **Likelihood:** 3 · **Impact:** 3
+
+Work may slip or individual contributions may go unrecorded, weakening milestones and assessment evidence.
+
+**Mitigation:**
+
+- [ ] Record weekly decisions and link contributions to board cards
+- [ ] Revise scope early when milestones are at risk
+
+**Trigger:** Cards without owners, evidence, or review.
+
+## Closed Risks
+
+| ID  | Risk     | Closed | Outcome |
+| --- | -------- | ------ | ------- |
+| -   | None yet | -      | -       |
