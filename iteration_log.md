@@ -42,7 +42,7 @@ Copy this block for each iteration, newest at the bottom. Add one item section p
 
 ## Reviews and Retrospectives
 
-Iteration reviews and retrospectives are held on a regular schedule, separately from iterations. Each one has its own note in [meetings](meetings/README.md).
+Iteration reviews are held weekly and retrospectives at the end of each Product Increment, separately from iterations. Each one has its own note in [meetings](meetings/README.md).
 
 | Date                 | Type | Iterations covered | Note |
 | -------------------- | ---- | ------------------ | ---- |

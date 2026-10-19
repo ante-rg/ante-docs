@@ -3,7 +3,7 @@
 This register supports the [project plan](project_plan.md). Update it whenever a risk, trigger, score, or response changes.
 
 - **Register Owner:** Jurijs
-- **Last Updated:** 2026-10-18
+- **Last Updated:** 2026-10-19
 - **Review Frequency:** Weekly; at each iteration review
 
 ## Scoring Key
@@ -22,7 +22,7 @@ Score = Likelihood (1-5) × Impact (1-5)
 | --- | ----------------------------- | :-: | :-: | :---: | ------ | --------- |
 | R01 | No permitted player data      |  3  |  5  | 🔴 15 | Open   | Jurijs    |
 | R02 | No trustworthy harm proxy     |  4  |  4  | 🔴 16 | Open   | Daniils   |
-| R03 | Future leakage                |  3  |  4  | 🟡 12 | Open   | Volodymyr |
+| R03 | Future leakage                |  3  |  4  | 🟡 12 | Open   | Andrejs   |
 | R04 | Privacy exposure              |  2  |  5  | 🟡 10 | Open   | Arturs    |
 | R05 | Misleading interpretation     |  3  |  3  | 🟡 9  | Open   | Andrejs   |
 | R06 | Schedule or contribution gaps |  3  |  3  | 🟡 9  | Open   | Jurijs    |
@@ -37,12 +37,12 @@ The team may not obtain written, applicable permission to use operator player da
 
 **Mitigation:**
 
-- [ ] Obtain current wording of customer agreement clauses 3.2, 3.7, and 11.1 (due 2026-10-23)
-- [ ] Document applicability to the specific dataset, purpose, team, and transfer (due 2026-10-23)
+- [ ] Obtain current wording of customer agreement clauses 3.2, 3.7, and 11.1 (due 2026-10-30)
+- [ ] Document applicability to the specific dataset, purpose, team, and transfer (due 2026-10-30)
 - [ ] Record fields, de-identification method, access list, storage, retention, and deletion rule
 - [ ] Keep the synthetic-data route ready as the fallback deliverable; do not claim external validation
 
-**Trigger:** No written permission or usable public dictionary by the 23 Oct data and label decision.
+**Trigger:** No written permission or usable public dictionary by the 30 Oct data and label decision.
 **Residual score (after mitigation):** L1 × I5 = 5 🟢
 
 ### R02 - No trustworthy harm proxy - 🔴 16
@@ -53,23 +53,24 @@ Available labels may not reliably indicate gambling harm, so predictive performa
 
 **Mitigation:**
 
-- [ ] Record whether any label is independently assessed, what it means, who assigned it, and when (due 2026-10-23)
-- [ ] Freeze the outcome definition and holdout plan (due 2026-10-23)
+- [ ] Record whether any label is independently assessed, what it means, who assigned it, and when (due 2026-10-30)
+- [ ] Decide the source of harm-event labels (due 2026-10-30, MS1)
+- [ ] Freeze the outcome definition (due 2026-11-01, D2.2) and the evaluation protocol (due 2026-11-06, D4.1)
 - [ ] Document selection and uncertainty
-- [ ] If representative labels are absent, limit results to rules/feature feasibility and software scenarios
+- [ ] If representative labels are absent, limit results to rules/feature feasibility and software scenarios, and rely on the blind case review (O4) as the main check of what the scores flag
 
 **Trigger:** Labels absent, self-selected, or inconsistently assessed.
 **Residual score (after mitigation):** L4 × I2 = 8 🟡
 
 ### R03 - Future leakage - 🟡 12
 
-**Category:** Technical · **Owner:** Volodymyr · **Status:** Open · **Likelihood:** 3 · **Impact:** 4
+**Category:** Technical · **Owner:** Andrejs · **Status:** Open · **Likelihood:** 3 · **Impact:** 4
 
 Information unavailable at prediction time may leak into features or evaluation, inflating reported performance.
 
 **Mitigation:**
 
-- [ ] Enforce temporal and player-disjoint checks in the pipeline
+- [ ] Enforce as-of cutoffs and person-grouped folds in the pipeline
 - [ ] Review source lineage and the holdout protocol
 
 **Trigger:** Feature after cutoff, label unavailable at evaluation time, or shared train/test players.

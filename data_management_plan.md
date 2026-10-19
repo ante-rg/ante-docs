@@ -9,7 +9,7 @@ No operator data or representative harm labels have been received or inspected. 
 - Keep raw source files immutable under `data/raw` or `data/external` in the research repository (both are ignored by git). Store restricted data only in an approved access-controlled location.
 - Store derived individual-level files under ignored `data/interim` or `data/processed` in the research repository. Do not commit data rows, player IDs, individual predictions, or trained models.
 - Publish schemas, code, tests with wholly synthetic fixtures, aggregate quality summaries, and charts only after a disclosure check. Suppress small cells and unusual trajectories that could identify a player.
-- Keep credentials in a managed secret store, never in any `.env` files, logs, notebooks, screenshots, or repository history (`.env.example` may contain placeholders only).
+- Keep credentials that grant access to player data (such as storage, database, or export accounts) in a managed secret store, never in `.env` files, logs, notebooks, screenshots, or repository history. Other local settings, such as API keys for development tools, may go in an untracked `.env` file; `.env.example` contains placeholders only.
 - Document any external transfer and prohibit unapproved upload to AI tools or third-party services.
 
 ## Quality and Provenance
@@ -22,4 +22,4 @@ Make public-safe metadata and code findable through the organization's profile, 
 
 ## Human Oversight and Reporting
 
-The demonstration uses synthetic or explicitly approved de-identified records. Scores or indicators are for human review only. Reports separate descriptive findings, proxy-label evaluation, and unmeasured real-world benefit.
+The demonstration replays held-out de-identified records in approved access-controlled storage, so each player is scored by a model trained without them. Scores or indicators are for human review only. Reports separate descriptive findings, proxy-label evaluation, and unmeasured real-world benefit.
