@@ -2,8 +2,8 @@
 
 This record summarizes what each member actually contributed to the project, with links to public evidence.
 
-- **Record Owner:** Jurijs
-- **Last Updated:** 2026-10-18
+- **Record Owner:** Daniils
+- **Last Updated:** 2026-10-20
 - **Update Frequency:** At each iteration review
 
 ## Summary

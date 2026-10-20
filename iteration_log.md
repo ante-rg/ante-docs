@@ -2,8 +2,8 @@
 
 This log records Data Driven Scrum iterations and any received feedback.
 
-- **Log Owner:** Jurijs
-- **Last Updated:** 2026-10-18
+- **Log Owner:** Daniils
+- **Last Updated:** 2026-10-20
 - **Update Frequency:** When an iteration ends; after each review or retrospective
 
 ## Iterations

@@ -3,7 +3,7 @@
 This document describes how the Ante team plans, tracks, and carries out its work. It covers the development process, how that process maps onto our GitHub Project, and the research practices that keep our results honest and reproducible.
 
 - **Owner:** Daniils (Process Expert)
-- **Last Updated:** 2026-10-19
+- **Last Updated:** 2026-10-20
 - **Update Frequency:** When the process changes, usually after a retrospective
 
 ## Data Driven Scrum
@@ -33,7 +33,7 @@ Each member also has a technical role and a lead work package, listed in the [pr
 - **Item.** A unit of work on the backlog, such as a question to answer, a hypothesis to test, a user story, or other goals. See [Item Types](#item-types).
 - **Task.** A concrete, assignable step of an item, created during refinement. Tasks belong to DDS phases (Create, Observe, Analyze) and specify definition of done.
 - **Backlog.** The prioritized list of items, owned by the Product Owner and continuously refined by the team.
-- **Item Breakdown Board.** Each item is broken down into tasks during refinement. Every item needs at least one **Create**, one **Observe**, and one **Analyze** task.
+- **Item Breakdown Board.** Each selected item is broken down into tasks during refinement. Every item needs at least one **Create**, one **Observe**, and one **Analyze** task.
 - **Task Board.** Shows the tasks currently being worked on, moving through Backlog, Refining, Ready, In Progress, and Done statuses.
 
 ### The Create - Observe - Analyze Cycle
@@ -50,8 +50,8 @@ Analysis is shared by the whole team. It is not left only to the Product Owner.
 
 - **Backlog refinement.** The team helps the Product Owner clarify, split, and estimate items. Each item gets a relative estimate of its **value**, **effort**, and **probability of success**. Estimates guide prioritization; they do not fix the scope or the length of an iteration. DDS suggests that team members spend roughly 5-10% of their capacity on refinement.
 - **Backlog prioritization.** The Product Owner orders the backlog using these estimates and input from the team and the supervisor.
-- **Backlog item selection.** When the team has capacity for a new iteration, it selects the next items from the top of the backlog. Finishing iterations already in progress takes priority over starting new ones.
-- **Daily check-in.** A short sync on progress, plans, and blockers.
+- **Backlog item selection.** When the team has capacity for a new iteration, it selects the next items from the top of the backlog. Selected items are first refined to break them down into Create, Observe, and Analyze tasks. Finishing iterations already in progress takes priority over starting new ones.
+- **Sync after classes.** A short in-person sync after classes on progress, plans, and blockers, in place of a daily stand-up. Day-to-day communication runs through WhatsApp.
 - **Iteration review.** Held weekly, scheduled by the Product Owner. The team presents results and analysis, the Product Owner and, when available, the supervisor give feedback, and backlog priorities are revisited.
 - **Retrospective.** Held at the end of each Product Increment. The team reviews what is and is not working in the process and commits to a small number of improvements.
 
@@ -83,7 +83,7 @@ The project uses two GitHub issue types:
 | Field                          | Applies to   | Meaning                                                                                                 |
 | ------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------- |
 | Status                         | Items, Tasks | Where the work is in the flow: Backlog, Refining, Ready, In Progress, Done.                             |
-| Value / Effort / Probability   | Items        | Relative refinement estimates on a five-point scale, from very low to very high.                        |
+| Value / Effort / Probability   | Items        | Relative refinement estimates on a five-point scale.                                                    |
 | Work Package                   | Items, Tasks | The work package (WP1-WP6) from the [project plan](project_plan.md) the work belongs to.                |
 | Iteration                      | Items, Tasks | The DDS iteration the work was selected into.                                                           |
 | Phase                          | Tasks        | Create, Observe, or Analyze.                                                                            |
@@ -96,15 +96,15 @@ The project uses two GitHub issue types:
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Backlog**         | All open items with their estimates and iteration. Used for refinement, prioritization, and item selection.                                     |
 | **Item Breakdown**  | Tasks grouped by parent item and sorted by phase. Our Item Breakdown Board: shows whether each item has its Create, Observe, and Analyze tasks. |
-| **Task Board**      | Board of tasks by status, grouped by parent item. Our Task Board, used day to day and in check-ins.                                             |
+| **Task Board**      | Board of tasks by status, grouped by parent item. Our Task Board, used day to day and in syncs.                                                 |
 | **Work Packages**   | Items grouped by work package, with status, iteration, and outcome. Used to track progress against the plan.                                    |
 
 ### Flow
 
-1. **Backlog.** Anyone can create an item using one of the templates. New items start in Backlog.
-2. **Refining.** The team clarifies the item, fills in its estimates, and breaks it down into Create, Observe, and Analyze tasks as sub-issues. For a hypothesis, the decision rule is written in full here.
+1. **Backlog.** Anyone can create an item using one of the templates. New items start in Backlog, where the team clarifies and estimates them for prioritization.
+2. **Refining.** The item has been selected into an iteration (set the **Iteration** field). The team first refines it, breaking it down into Create, Observe, and Analyze tasks as sub-issues. For a hypothesis, the decision rule is written in full here.
 3. **Ready.** The item is clear enough to start (see [Definition of Ready](#definition-of-ready)). For a hypothesis, **the decision rule is locked from this point**.
-4. **In Progress.** The item has been selected into an iteration (set the **Iteration** field) and its tasks are being worked on through the Task Board.
+4. **In Progress.** The item's tasks are being worked on through the Task Board.
 5. **Done.** All tasks are complete, the evidence is linked, and the Product Owner has confirmed the result (see [Definition of Done](#definition-of-done)).
 
 When an iteration ends, its outcome, decisions, and follow-up items are recorded in the [iteration log](iteration_log.md). Reviews and retrospectives get their own notes in [meetings](meetings/README.md).
