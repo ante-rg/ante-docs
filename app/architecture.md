@@ -1,32 +1,64 @@
 # Ante: architecture
 
-Ante is a monitoring system for a national gambling regulator. Licensed operators send player game events; the system ranks players by how closely their behaviour resembles loss chasing and gives a supervisory officer a review queue, a case view with reasons, and a per-operator overview.
+Ante is a monitoring system for the responsible-gambling (RG) team of a casino group with five licensed brands (P1–P5). The regulator's licence conditions require the group to monitor its players. The brands' platforms send player game events; the system ranks players by how closely their behaviour resembles loss chasing and gives the RG team a review queue, a case view with reasons, and a per-brand overview. Every user sees all five brands.
 
 This document is the build spec for [`ante-app`](https://github.com/ante-rg/ante-app). The API contract is in [`openapi.yaml`](https://github.com/ante-rg/ante-app/blob/main/openapi.yaml). UI decisions are in [`frontend-decisions.md`](frontend-decisions.md); visual tokens are in [`web/src/styles/tokens.css`](https://github.com/ante-rg/ante-app/blob/main/web/src/styles/tokens.css).
 
 ## 1. Components
 
-```
-                         Cloudflare Access (email one-time code)
-                                       │
- browser ──HTTPS── cloudflared ──► web (static Vite build, served by api)
-                                       │  /api/v1/*
-                                       ▼
- operator / replay ──► /ingest/v1/* ─► api  (Go, chi) ──HTTP/JSON──► scorer (Python, FastAPI)
-   script (API key)                     │                                │
-                                        └──────────► PostgreSQL ◄────────┘ (read-only)
-                                                        ▲
-                         ante-research batch ──► loader (Go cmd) ── artifacts/*.parquet
+```mermaid
+flowchart LR
+  subgraph users[Users]
+    rg[RG team browser]
+    op[Brand platform or replay script]
+  end
+
+  subgraph cf[Cloudflare]
+    access[Access: email one-time code / service token]
+  end
+
+  subgraph server[Team server, Docker Compose]
+    tunnel[cloudflared on the host]
+    api["api (Go, chi)<br/>serves the web build<br/>/api/v1/* /ingest/v1/* /healthz"]
+    scorer["scorer (Python, FastAPI)<br/>internal only"]
+    pg[(PostgreSQL 16)]
+    wt[watchtower]
+  end
+
+  subgraph gh[GitHub]
+    ci[Actions: lint, test, publish, deploy]
+    ghcr[(ghcr.io images)]
+  end
+
+  subgraph ds[ante-research]
+    art["artifacts/&lt;model_version&gt;/<br/>parquet + model_card.json"]
+    pkg[feature package + model]
+  end
+
+  rg --> access --> tunnel --> api
+  op -- X-API-Key --> access
+  api -- POST /score --> scorer
+  api --> pg
+  scorer -- read-only role --> pg
+  art -- "api/cmd/loader" --> pg
+  pkg -. pinned by tag .-> scorer
+  ci -- push images --> ghcr
+  ci -- "POST /v1/update (service token)" --> access
+  access --> wt
+  wt -- pull --> ghcr
+  wt -- restart --> api
+  wt -- restart --> scorer
 ```
 
 | Component | Tech | Owns |
 |---|---|---|
-| `api` | Go 1.23, chi, pgx, sqlc, goose | Dashboard read API, reviews, ingest, auth, audit log. Serves the built frontend. |
-| `loader` | Go command in the same module (`cmd/loader`) | Loads DS artifacts into Postgres, idempotent per `model_version`. |
-| `scorer` | Python 3.12, FastAPI, `rg_features` pinned by tag | Scores one player from stored events. Same feature code as training. Internal only. |
-| `web` | React 18 + TypeScript, Vite, React Router, TanStack Query, Radix Primitives, visx | Four screens from wireframe A. |
+| `api` | Go 1.27, chi, pgx, sqlc, goose, oapi-codegen strict server | Dashboard read API, reviews, ingest, auth, audit log. Serves the built frontend. |
+| `loader` | Go command in the same module (`cmd/loader`), parquet-go | Loads DS artifacts into Postgres, idempotent per `model_version`. |
+| `fakeartifacts` | Go command (`cmd/fakeartifacts`) | Writes a synthetic `artifacts/dummy-v0/` set in the §4 format until the data science team publishes real artifacts. |
+| `scorer` | Python 3.12, FastAPI, the data science feature package pinned by tag | Scores one player from stored events. Same feature code as training. Internal only. |
+| `web` | React 19 + TypeScript, Vite, React Router, TanStack Query, Radix Primitives, visx, Biome | Four screens from wireframe A. |
 | `postgres` | PostgreSQL 16 | All state. |
-| `cloudflared` | Cloudflare Tunnel | Public entry. No open inbound ports on the server. |
+| `cloudflared` | Cloudflare Tunnel, already running on the server host (not in compose) | Public entry. No open inbound ports on the server. |
 
 The scorer is only on the internal Docker network. Only `api` talks to it.
 
@@ -47,7 +79,7 @@ POST http://scorer:8000/score
 GET  http://scorer:8000/healthz → { "status": "ok", "model_version": "v0.3.0" }
 ```
 
-The scorer reads the player's events from Postgres with a read-only role, builds features with `rg_features`, and loads the model file from `artifacts/<model_version>/model/`. Timeout from `api`: 5 s. If the scorer fails, `api` still stores the events and answers 503 with `score: null`.
+The scorer reads the player's events from Postgres with a read-only role, builds features with the data science team's feature package, and loads the model file from `artifacts/<model_version>/model/`. Timeout from `api`: 5 s. If the scorer fails, `api` still stores the events and answers 503 with `score: null`.
 
 ## 3. Replay semantics
 
@@ -61,7 +93,7 @@ The data has no calendar dates. Every player's history starts at their own day 0
 
 ## 4. Data handoff from ante-research
 
-The data science team publishes a versioned folder `artifacts/<model_version>/`. The loader validates and loads it. This folder is the contract between the two repositories; changes to it need a PR in both.
+The data science team publishes a versioned folder `artifacts/<model_version>/`. The loader validates and loads it. This folder is the contract between the two repositories; changes to it need a PR in both. Until the first real artifacts exist, `api/cmd/fakeartifacts` writes a synthetic `artifacts/dummy-v0/` set in this format, so the app can be built and demonstrated end to end.
 
 | File | Grain | Columns |
 |---|---|---|
@@ -116,10 +148,33 @@ Blind mode is enforced by the server, not by blurring in the browser.
 
 ## 8. Deployment
 
-- `deploy/docker-compose.yml`: `api` (also serves `web`), `scorer`, `postgres`, `cloudflared`, `watchtower`.
-- GitHub Actions in `ante-app`: on PR, lint and tests for Go, Python and TypeScript, plus the contract test; on `main`, build images and push to `ghcr.io/ante-rg/ante-api` and `ghcr.io/ante-rg/ante-scorer`.
-- The server pulls new images with Watchtower. GitHub holds no credentials for the server.
-- Fallback for the viva: `docker compose -f deploy/docker-compose.yml -f deploy/local.yml up` on a laptop with the synthetic dataset.
+- Server: the team's own machine (Ubuntu 24.04, amd64). Images are built for `linux/amd64` only.
+- `deploy/docker-compose.yml`: `postgres`, `api` (also serves `web`, published on `127.0.0.1:8080` only), `scorer` (internal network only), and `watchtower` (`nickfedor/watchtower`, under the `server` profile, HTTP API on `127.0.0.1` only). There is no `cloudflared` container: the tunnel already runs on the host and routes `ante.<domain>` to `http://localhost:8080`, with Cloudflare Access in front.
+- GitHub Actions in `ante-app` (`ci.yml`): on PR, lint and tests for Go, Python and TypeScript, a generated-code drift check, the contract test, and an image build with a compose smoke test; on `main`, a `publish` job pushes `ghcr.io/ante-rg/ante-app` and `ghcr.io/ante-rg/ante-app-scorer` (`:<sha>` and `:latest`) only after every check passes.
+- A `deploy` job follows `publish`. It calls Watchtower's HTTP API (`POST /v1/update`) on a second hostname protected by Cloudflare Access with a service token, then polls `/healthz` until its `version` equals the commit SHA, and fails after a timeout. GitHub holds only the Access service token and the Watchtower token: no SSH keys, no inbound ports.
+- Fallback for the viva: `make up` (compose with `deploy/local.yml`) on a laptop with the synthetic dataset.
+
+```mermaid
+sequenceDiagram
+  participant Dev as Developer
+  participant GH as GitHub Actions
+  participant R as ghcr.io
+  participant CF as Cloudflare Access
+  participant W as Watchtower
+  participant A as api
+  Dev->>GH: merge PR into main
+  GH->>GH: lint + test (Go, Python, web)
+  GH->>R: publish ante-app:SHA, ante-app-scorer:SHA (+ latest)
+  GH->>CF: POST /v1/update with service token
+  CF->>W: forward
+  W->>R: pull latest
+  W->>A: restart containers
+  loop until version == SHA or timeout
+    GH->>CF: GET /healthz with service token
+    CF->>A: forward
+    A-->>GH: { status, version }
+  end
+```
 
 ## 9. Contract test
 
