@@ -1,0 +1,528 @@
+<title>Ante Dashboard Mockup</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&display=swap">
+<style>
+/* Layout: one working column under a navy-ink top bar; queue is a dense table, case leads with the timeline. */
+/* Ante design tokens. "Inspector's file": cool paper, navy ink, one warm risk scale.
+   Every colour in the app comes from here. Light first; dark redefines tokens only. */
+:root {
+  /* surfaces and text */
+  --paper: #eef1f5;        /* page ground: cool grey-blue, not cream */
+  --surface: #ffffff;      /* tables, panels, form */
+  --sunken: #e3e8ef;       /* hover rows, track of sliders, empty cells */
+  --ink: #172238;          /* primary text: navy, reads as "official document" */
+  --ink-soft: #55607a;     /* secondary text */
+  --rule: #cdd4df;         /* borders and table lines */
+
+  /* interaction */
+  --action: #24467f;       /* links, primary button, focus ring, replay line */
+  --on-action: #ffffff;
+
+  /* risk scale: one warm hue family, never red/green */
+  --risk-high: #7b1e2c;        /* oxblood */
+  --risk-high-tint: #f3e3e6;
+  --on-risk-high: #ffffff;
+  --risk-elevated: #9a6414;    /* ochre */
+  --risk-elevated-tint: #f6ecda;
+  --risk-low: #8a93a6;
+  --risk-none: #d7dde6;        /* insufficient data, inactive */
+
+  /* type */
+  --font-ui: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --text-xs: 0.8125rem;   /* 13 */
+  --text-sm: 0.875rem;    /* 14 */
+  --text-md: 1rem;        /* 16, body */
+  --text-lg: 1.25rem;     /* 20, section */
+  --text-xl: 1.75rem;     /* 28, case title */
+  --text-num: 2rem;       /* 32, score */
+  --leading: 1.5;
+
+  /* space and shape */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+  --radius-control: 6px;   /* buttons, inputs */
+  --radius-panel: 2px;     /* panels are sheets of paper, almost square */
+  --radius-chip: 999px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #10161f; --surface: #172030; --sunken: #1f2a3c; --ink: #e4e9f1; --ink-soft: #9ba6b9; --rule: #2c3849;
+    --action: #8fb0e8; --on-action: #0f1a2e;
+    --risk-high: #e48b98; --risk-high-tint: #3a1d25; --on-risk-high: #2a0d14;
+    --risk-elevated: #dcac58; --risk-elevated-tint: #34291a;
+    --risk-low: #7c869a; --risk-none: #2a3445;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #10161f; --surface: #172030; --sunken: #1f2a3c; --ink: #e4e9f1; --ink-soft: #9ba6b9; --rule: #2c3849;
+  --action: #8fb0e8; --on-action: #0f1a2e;
+  --risk-high: #e48b98; --risk-high-tint: #3a1d25; --on-risk-high: #2a0d14;
+  --risk-elevated: #dcac58; --risk-elevated-tint: #34291a;
+  --risk-low: #7c869a; --risk-none: #2a3445;
+  color-scheme: dark;
+}
+
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:var(--text-md)/var(--leading) var(--font-ui);font-variant-numeric:tabular-nums}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:700}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--action)}
+:focus-visible{outline:2px solid var(--action);outline-offset:2px}
+.wrap{max-width:1320px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.soft{color:var(--ink-soft)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* top bar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--rule)}
+.bar .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);padding-block:var(--s3)}
+.mark{font-weight:700;font-size:var(--text-lg);letter-spacing:.02em;display:flex;align-items:center;gap:var(--s2)}
+.mark svg{display:block}
+.nav{display:flex;gap:var(--s1);flex-wrap:wrap}
+.nav a{padding:6px 10px;border-radius:var(--radius-control);color:var(--ink-soft);text-decoration:none;font-weight:500}
+.nav a:hover{background:var(--sunken);color:var(--ink)}
+.nav a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -2px 0 var(--ink)}
+.replay{margin-left:auto;display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap}
+.replay label{color:var(--ink-soft);font-size:var(--text-sm)}
+.replay input[type=range]{width:220px;accent-color:var(--action)}
+.replay output{min-width:3.5ch;font-weight:700}
+.btn{border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:var(--radius-control);padding:6px 12px;cursor:pointer;font-weight:500}
+.btn:hover{background:var(--sunken)}
+.btn.primary{background:var(--action);border-color:var(--action);color:var(--on-action)}
+.btn.primary:hover{filter:brightness(1.08)}
+
+main{padding-block:var(--s5) var(--s7)}
+.screen{display:flex;flex-direction:column;gap:var(--s5)}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:var(--radius-panel);min-width:0}
+.panel-h{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);align-items:baseline;justify-content:space-between;padding:var(--s4) var(--s4) 0}
+.panel-b{padding:var(--s4)}
+.example{font-size:var(--text-xs);color:var(--ink-soft)}
+
+/* band chip */
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:var(--radius-chip);padding:1px 10px;font-size:var(--text-sm);font-weight:700;white-space:nowrap;border:1.5px solid transparent;line-height:1.5}
+.chip.high{background:var(--risk-high);color:var(--on-risk-high)}
+.chip.elevated{border-color:var(--risk-elevated);color:var(--risk-elevated);background:var(--risk-elevated-tint)}
+.chip.low{color:var(--ink-soft);font-weight:500;padding-inline:0}
+.chip.none{color:var(--ink-soft);font-weight:500;padding-inline:0}
+
+/* queue */
+.qhead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s4)}
+.qhead p{max-width:62ch}
+.pop{display:grid;grid-template-columns:repeat(50,1fr);gap:2px;margin-top:var(--s3)}
+.pop i{aspect-ratio:1;border-radius:1px;background:var(--sunken)}
+.pop i.h{background:var(--risk-high)} .pop i.e{background:var(--risk-elevated)} .pop i.l{background:var(--risk-low);opacity:.45} .pop i.n{background:var(--risk-none)}
+.popkey{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);margin-top:var(--s3);font-size:var(--text-sm)}
+.popkey span{display:inline-flex;align-items:center;gap:6px}
+.popkey i{width:10px;height:10px;border-radius:1px;display:inline-block}
+.filters{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s5);align-items:center;padding:var(--s4);border-bottom:1px solid var(--rule)}
+.field{display:flex;align-items:center;gap:var(--s2);font-size:var(--text-sm)}
+select{border:1px solid var(--rule);background:var(--surface);border-radius:var(--radius-control);padding:5px 8px}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:var(--radius-control);overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:5px 10px;cursor:pointer;font-size:var(--text-sm)}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.switch{display:inline-flex;align-items:center;gap:var(--s2);cursor:pointer;font-size:var(--text-sm);margin-left:auto}
+.switch button{width:36px;height:20px;border-radius:999px;border:1px solid var(--rule);background:var(--sunken);position:relative;cursor:pointer;padding:0}
+.switch button::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--ink-soft);transition:transform .15s}
+.switch button[aria-checked="true"]{background:var(--action);border-color:var(--action)}
+.switch button[aria-checked="true"]::after{transform:translateX(16px);background:var(--on-action)}
+.blindnote{padding:var(--s3) var(--s4);background:var(--sunken);font-size:var(--text-sm);border-bottom:1px solid var(--rule)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{padding:10px var(--s4);text-align:left;border-bottom:1px solid var(--rule);vertical-align:middle;white-space:nowrap}
+th{font-size:var(--text-sm);font-weight:700;color:var(--ink-soft)}
+td.r,th.r{text-align:right}
+td.reason{white-space:normal;min-width:320px}
+tbody tr.go{cursor:pointer}
+tbody tr.go:hover,tbody tr.go:focus-visible{background:var(--sunken)}
+.pid{font-weight:700}
+.status-ok{color:var(--ink)}
+.status-pending{color:var(--ink-soft)}
+.ended{display:block;font-size:var(--text-xs);color:var(--ink-soft)}
+.spark{display:block;color:var(--ink-soft)}
+.spark .end{fill:var(--risk-high)}
+.more{padding:var(--s3) var(--s4);font-size:var(--text-sm)}
+
+/* case */
+.crumb{font-size:var(--text-sm)}
+.case-h{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s4) var(--s6);align-items:end}
+.case-h h1{font-size:var(--text-xl);letter-spacing:.01em}
+.scorebox{display:flex;align-items:center;gap:var(--s4)}
+.score{font-size:var(--text-num);font-weight:700;line-height:1}
+.lead{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);padding:var(--s3) var(--s4);border-left:4px solid var(--risk-high);background:var(--risk-high-tint)}
+.lead strong{font-weight:700}
+.tl-legend{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);font-size:var(--text-sm);color:var(--ink-soft)}
+.tl-legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:1px}
+.timeline{display:block;width:100%;height:auto;overflow:visible}
+.timeline text{fill:var(--ink-soft);font:12px var(--font-ui)}
+.timeline .lbl{fill:var(--ink);font-weight:700}
+.grid2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:var(--s5)}
+.reasons{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.reasons li{display:grid;grid-template-columns:minmax(0,1fr) 120px 3.5ch;gap:var(--s3);align-items:center;padding:var(--s3) 0;border-bottom:1px solid var(--rule)}
+.reasons li:last-child{border-bottom:0}
+.wbar{height:8px;background:var(--sunken);border-radius:1px;overflow:hidden}
+.wbar span{display:block;height:100%;background:var(--risk-high)}
+.rules{margin-top:var(--s4);padding-top:var(--s3);border-top:1px dashed var(--rule);font-size:var(--text-sm)}
+.rules ul{margin:var(--s2) 0 0;padding-left:1.1em}
+.opts{display:flex;flex-direction:column;gap:var(--s2);margin:0;padding:0;border:0}
+.opt{display:flex;gap:var(--s3);align-items:flex-start;border:1px solid var(--rule);border-radius:var(--radius-control);padding:var(--s3);cursor:pointer;background:var(--surface)}
+.opt:hover{background:var(--sunken)}
+.opt input{margin-top:4px;accent-color:var(--action)}
+.opt:has(input:checked){border-color:var(--action);box-shadow:inset 0 0 0 1px var(--action)}
+.opt small{display:block;color:var(--ink-soft);font-size:var(--text-sm)}
+textarea{width:100%;min-height:84px;border:1px solid var(--rule);border-radius:var(--radius-control);background:var(--surface);padding:var(--s2);resize:vertical}
+.formrow{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);margin-top:var(--s3)}
+.history{margin-top:var(--s4);padding-top:var(--s3);border-top:1px dashed var(--rule);font-size:var(--text-sm)}
+.chase{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--risk-high);margin-right:6px;vertical-align:middle}
+.neg{color:var(--risk-high)}
+.placeholder{padding:var(--s6) var(--s4)}
+
+@media (max-width:900px){
+  .grid2{grid-template-columns:1fr}
+  .case-h{grid-template-columns:1fr}
+  .replay{margin-left:0;width:100%}
+  .replay input[type=range]{flex:1;width:auto;min-width:120px}
+  .switch{margin-left:0}
+  .pop{grid-template-columns:repeat(25,1fr)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="bar">
+  <div class="wrap">
+    <span class="mark">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="1" width="20" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="5" y="12" width="3" height="5" fill="currentColor"/><rect x="9.5" y="9" width="3" height="8" fill="currentColor"/><rect x="14" y="5" width="3" height="12" fill="var(--risk-high)"/></svg>
+      Ante
+    </span>
+    <nav class="nav" aria-label="Main">
+      <a href="#queue" data-view="queue">Review queue</a>
+      <a href="#operators" data-view="operators">Operators</a>
+      <a href="#about" data-view="about">About the score</a>
+    </nav>
+    <div class="replay">
+      <label for="day">Data as of day</label>
+      <input type="range" id="day" min="0" max="314" value="120">
+      <output id="dayout" for="day">120</output>
+      <button class="btn" id="play" type="button" aria-pressed="false">Play</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- QUEUE -->
+  <section class="screen" id="v-queue" aria-labelledby="q-title">
+    <div class="qhead">
+      <div>
+        <h1 id="q-title" style="font-size:var(--text-xl)">Review queue</h1>
+        <p class="soft">100 players from 5 operators, each shown <span class="dayref">120</span> days after their first activity. Players whose history is shorter are shown at their last day.</p>
+      </div>
+    </div>
+
+    <div class="panel panel-b">
+      <div class="row" style="display:flex;justify-content:space-between;gap:var(--s3);flex-wrap:wrap">
+        <h2 style="font-size:var(--text-md)">All 100 players by band</h2>
+        <span class="example">Each square is one player, ordered by score.</span>
+      </div>
+      <div class="pop" id="pop" role="img" aria-label="10 high, 10 elevated, 76 low, 4 with not enough data"></div>
+      <div class="popkey">
+        <span><i style="background:var(--risk-high)"></i><strong>10</strong> high</span>
+        <span><i style="background:var(--risk-elevated)"></i><strong>10</strong> elevated</span>
+        <span><i style="background:var(--risk-low);opacity:.45"></i><strong>76</strong> low</span>
+        <span><i style="background:var(--risk-none)"></i><strong>4</strong> not enough data</span>
+        <span class="soft"><strong>2</strong> entered high since day <span class="dayprev">119</span></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="filters">
+        <label class="field" for="op">Operator
+          <select id="op"><option value="">All operators</option><option>P1</option><option>P2</option><option>P3</option><option>P4</option><option>P5</option></select>
+        </label>
+        <div class="field">Band
+          <div class="seg" role="group" aria-label="Band" id="bandseg">
+            <button type="button" aria-pressed="true" data-b="he">High and elevated</button>
+            <button type="button" aria-pressed="false" data-b="h">High</button>
+          </div>
+        </div>
+        <div class="field">Review
+          <div class="seg" role="group" aria-label="Review status" id="statseg">
+            <button type="button" aria-pressed="true" data-s="all">All</button>
+            <button type="button" aria-pressed="false" data-s="pending">To review</button>
+            <button type="button" aria-pressed="false" data-s="reviewed">Reviewed</button>
+          </div>
+        </div>
+        <label class="switch" id="blindlbl"><button type="button" role="switch" aria-checked="false" id="blind" aria-labelledby="blindlbl"></button>Blind review</label>
+      </div>
+      <p class="blindnote" id="blindnote" hidden>Blind review shows the fixed review sample in random order. The server leaves out score, band, rank and reasons, so you judge each case from its activity alone.</p>
+      <div class="tablewrap">
+        <table>
+          <thead id="qthead"></thead>
+          <tbody id="qrows"></tbody>
+        </table>
+      </div>
+      <p class="more soft" id="qcount"></p>
+    </div>
+    <p class="example">Example data. Player IDs, operators and history lengths come from the dataset; scores, reasons and reviews are invented for this mockup.</p>
+  </section>
+
+  <!-- CASE -->
+  <section class="screen" id="v-case" aria-labelledby="c-title" hidden>
+    <p class="crumb"><a href="#queue" data-view="queue">Review queue</a> <span class="soft">/ S086</span></p>
+    <div class="case-h">
+      <div>
+        <h1 id="c-title">Player S086</h1>
+        <p class="soft" id="c-meta">Operator P3. Day 120 of 315. 142 sessions and 301 deposits so far, 9,840 € deposited.</p>
+      </div>
+      <div class="scorebox">
+        <span class="chip high">High</span>
+        <span class="score" id="c-score">0.91</span>
+        <span class="soft">Rank 1 of 100</span>
+      </div>
+    </div>
+
+    <div class="lead" id="c-lead">
+      <span>Model flagged high on <strong>day 41</strong>.</span>
+      <span>First fixed rule fired on <strong>day 97</strong>.</span>
+      <span>The model was <strong>56 days earlier</strong>.</span>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h">
+        <h2 style="font-size:var(--text-lg)">Activity from day 0 to day <span class="dayref">120</span></h2>
+        <div class="tl-legend">
+          <span><i class="sw" style="background:var(--ink-soft);opacity:.55"></i>Deposits per day</span>
+          <span><i class="sw" style="background:var(--risk-high)"></i>Day with a loss-chasing session</span>
+          <span><svg width="18" height="10" aria-hidden="true"><line x1="0" y1="5" x2="18" y2="5" stroke="currentColor" stroke-width="2"/></svg>Risk score</span>
+        </div>
+      </div>
+      <div class="panel-b">
+        <svg class="timeline" id="tl" viewBox="0 0 1000 330" role="img" aria-labelledby="tl-desc"><desc id="tl-desc">Risk score and daily deposits for player S086 from day 0 to the replay day. The score crosses into the high band on day 41; the first fixed rule fires on day 97.</desc></svg>
+        <p class="example">Example data generated for the mockup.</p>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-h"><h2 style="font-size:var(--text-lg)">Why this player is flagged</h2><span class="example">Share of the score</span></div>
+        <div class="panel-b">
+          <ul class="reasons">
+            <li><span>Deposited 3 or more times in one losing session on 9 of the last 30 days</span><span class="wbar"><span style="width:46%"></span></span><span class="soft">46%</span></li>
+            <li><span>Weekly deposits rose from 180 € to 640 € over four weeks</span><span class="wbar"><span style="width:31%"></span></span><span class="soft">31%</span></li>
+            <li><span>Median session length grew from 40 min to 2 h 50 min</span><span class="wbar"><span style="width:14%"></span></span><span class="soft">14%</span></li>
+          </ul>
+          <div class="rules">
+            <strong>Fixed rules</strong>
+            <ul><li>Deposits over 2,000 € in 30 days, first fired on day 97</li></ul>
+          </div>
+        </div>
+      </div>
+
+      <form class="panel" id="review" novalidate>
+        <div class="panel-h"><h2 style="font-size:var(--text-lg)">Your review</h2><span class="example">Saved with day <span class="dayref">120</span></span></div>
+        <div class="panel-b">
+          <fieldset class="opts">
+            <legend class="sr">Outcome</legend>
+            <label class="opt"><input type="radio" name="outcome" id="o-int" value="Intervention needed"><span><strong>Intervention needed</strong><small>The operator should contact this player.</small></span></label>
+            <label class="opt"><input type="radio" name="outcome" id="o-no" value="No concern"><span><strong>No concern</strong><small>Activity looks controlled.</small></span></label>
+            <label class="opt"><input type="radio" name="outcome" id="o-nd" value="Not enough data to decide"><span><strong>Not enough data to decide</strong><small>Look again later in the replay.</small></span></label>
+          </fieldset>
+          <label for="note" style="display:block;margin-top:var(--s3);font-size:var(--text-sm)">Note <span class="soft">(optional)</span></label>
+          <textarea id="note" placeholder="What did you see in the activity?"></textarea>
+          <div class="formrow"><button class="btn primary" type="submit">Save review</button><span id="saved" role="status" class="soft"></span></div>
+          <div class="history"><strong>Earlier reviews</strong><p class="soft" style="margin-top:4px">None yet.</p></div>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h"><h2 style="font-size:var(--text-lg)">Recent sessions</h2><span class="example">Up to day <span class="dayref">120</span>, newest first</span></div>
+      <div class="tablewrap" style="margin-top:var(--s3)">
+        <table>
+          <thead><tr><th>Session</th><th class="r">Day</th><th class="r">Length</th><th class="r">Deposits</th><th class="r">Deposited</th><th class="r">Result</th><th>Time</th></tr></thead>
+          <tbody id="srows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="v-operators" hidden><div class="panel placeholder"><h1 style="font-size:var(--text-xl)">Operators</h1><p class="soft" style="margin-top:var(--s2)">Not part of this mockup. Layout as in wireframe A: band counts per operator as of the replay day.</p></div></section>
+  <section class="screen" id="v-about" hidden><div class="panel placeholder"><h1 style="font-size:var(--text-xl)">About the score</h1><p class="soft" style="margin-top:var(--s2)">Not part of this mockup. Layout as in wireframe A: what the score means, model vs rules by observation window, known limits.</p></div></section>
+</main>
+
+<script>
+/* ---------- deterministic example data ---------- */
+let seed=42;const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
+const LAST=314,FIRST_RULE=97,HI_CUT=0.70,EL_CUT=0.55;
+const days=[];
+for(let d=0;d<=LAST;d++){
+  const g=1/(1+Math.exp(-(d-33)/9));
+  const active=rnd()<0.35+0.5*g;
+  const dep=active?Math.round((20+rnd()*60)*(1+4*g)*(rnd()<.2?2:1)):0;
+  const chase=active&&d>30&&rnd()<0.12+0.4*g;
+  const score=0.12+0.82*g+(rnd()-0.5)*0.03;
+  days.push({d,dep,chase,score:Math.min(.97,score),active});
+}
+const FIRST_HIGH=days.findIndex(v=>v.score>=HI_CUT);
+
+/* ---------- queue ---------- */
+const reasonsT=[
+ "Deposited 3 or more times in one losing session on 9 of the last 30 days",
+ "Weekly deposits rose from 150 € to 610 € over four weeks",
+ "Average of 4.1 deposits per session in the last 30 days",
+ "Sessions after midnight on 12 of the last 30 days",
+ "Median session length grew from 35 min to 2 h 40 min",
+ "Lost the full balance and deposited again within 5 minutes, 14 times",
+];
+// [id, op, last_day, band, score, reason idx, rules, review]
+const Q=[
+ ["S086","P3",314,"high",.91,0,true,null],
+ ["S023","P5",114,"high",.88,1,true,null],
+ ["S095","P1",417,"high",.86,2,true,"Intervention needed"],
+ ["S011","P3",280,"high",.84,3,false,null],
+ ["S027","P2",724,"high",.81,4,true,null],
+ ["S092","P3",305,"high",.79,5,false,null],
+ ["S002","P2",762,"high",.77,2,true,null],
+ ["S038","P3",128,"high",.75,0,false,null],
+ ["S098","P2",579,"high",.73,3,false,"No concern"],
+ ["S049","P2",568,"high",.71,1,true,null],
+ ["S077","P1",393,"elevated",.66,4,false,null],
+ ["S045","P4",609,"elevated",.64,0,false,null],
+ ["S024","P2",87,"elevated",.61,2,true,null],
+ ["S089","P3",56,"elevated",.60,5,false,"Not enough data"],
+ ["S022","P3",128,"elevated",.58,1,false,null],
+ ["S065","P1",261,"elevated",.57,3,false,null],
+ ["S051","P1",81,"elevated",.57,0,false,null],
+ ["S080","P4",97,"elevated",.56,4,true,null],
+ ["S058","P4",107,"elevated",.56,2,false,null],
+ ["S033","P5",54,"elevated",.55,1,false,null],
+];
+const spark=(s,i)=>{let v=[],x=s-0.25-rnd()*0.1;for(let k=0;k<30;k++){x+= (s-x)*0.12+(rnd()-0.5)*0.03;v.push(x)}v[29]=s;
+ const w=96,h=24,lo=Math.min(...v)-.02,hi=Math.max(...v)+.02,p=v.map((y,k)=>[(k/29)*(w-4)+2,h-2-((y-lo)/(hi-lo))*(h-4)]);
+ return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${p.map(q=>q.join(",")).join(" ")}" fill="none" stroke="currentColor" stroke-width="1.5"/><circle class="end" cx="${p[29][0]}" cy="${p[29][1]}" r="2.5"/></svg>`};
+Q[0][4]=+days[120].score.toFixed(2);
+const sparks=Q.map(q=>spark(q[4]));
+const chip=b=>b==="high"?'<span class="chip high">High</span>':b==="elevated"?'<span class="chip elevated">Elevated</span>':'<span class="chip low">Low</span>';
+const state={op:"",band:"he",stat:"all",blind:false,day:120};
+const order=[...Q.keys()].sort(()=>rnd()-.5);
+function renderQueue(){
+  const N=state.day;
+  document.getElementById("qthead").innerHTML=state.blind
+   ?`<tr><th>Case</th><th>Player</th><th>Operator</th><th class="r">Day shown</th><th>Your review</th></tr>`
+   :`<tr><th class="r">Rank</th><th>Player</th><th>Operator</th><th>Band</th><th class="r">Score</th><th>Last 30 days</th><th>Main reason</th><th>Rules</th><th class="r">Day shown</th><th>Review</th></tr>`;
+  let list=state.blind?order.map(i=>[Q[i],i]):Q.map((q,i)=>[q,i]);
+  list=list.filter(([q])=>(!state.op||q[1]===state.op)&&(state.blind||state.band==="he"||q[3]==="high")
+    &&(state.stat==="all"||(state.stat==="pending"?!q[7]:!!q[7])));
+  document.getElementById("qrows").innerHTML=list.map(([q,i],k)=>{
+    const shown=Math.min(N,q[2]),ended=q[2]<N?`<span class="ended">History ends on day ${q[2]}</span>`:"";
+    const rev=q[7]?`<span class="status-ok">${q[7]}</span>`:`<span class="status-pending">To review</span>`;
+    return state.blind
+     ?`<tr class="go" tabindex="0" data-id="${q[0]}"><td>${k+1}</td><td class="pid">${q[0]}</td><td>${q[1]}</td><td class="r">${shown}${ended}</td><td>${rev}</td></tr>`
+     :`<tr class="go" tabindex="0" data-id="${q[0]}"><td class="r">${i+1}</td><td class="pid">${q[0]}</td><td>${q[1]}</td><td>${chip(q[3])}</td><td class="r">${q[4].toFixed(2)}</td><td>${sparks[i]}</td><td class="reason">${reasonsT[q[5]]}</td><td>${q[6]?"Also flagged":'<span class="soft">Not flagged</span>'}</td><td class="r">${shown}${ended}</td><td>${rev}</td></tr>`}).join("")
+   ||`<tr><td colspan="10" class="soft">No players match these filters. Choose "All operators" or another review status.</td></tr>`;
+  document.getElementById("qcount").textContent=state.blind?`${list.length} of 40 cases in the review sample shown in this mockup.`:`${list.length} players shown. Low-band players are hidden; choose a band filter to change this.`;
+  document.getElementById("blindnote").hidden=!state.blind;
+}
+function renderPop(){const b=[...Array(10).fill("h"),...Array(10).fill("e"),...Array(76).fill("l"),...Array(4).fill("n")];
+  document.getElementById("pop").innerHTML=b.map(c=>`<i class="${c}"></i>`).join("")}
+
+/* ---------- timeline ---------- */
+const NS="http://www.w3.org/2000/svg";
+function renderTimeline(){
+  const N=Math.min(state.day,LAST),svg=document.getElementById("tl");
+  [...svg.querySelectorAll(":scope > :not(desc)")].forEach(n=>n.remove());
+  const X0=48,X1=984,xs=d=>X0+(d/Math.max(N,30))*(X1-X0);
+  const S_TOP=34,S_BOT=128,D_TOP=168,D_BOT=290;
+  const view=days.slice(0,N+1),maxDep=Math.max(200,...view.map(v=>v.dep));
+  const depMax=Math.ceil(maxDep/250)*250,ys=s=>S_BOT-s*(S_BOT-S_TOP),yd=v=>D_BOT-(v/depMax)*(D_BOT-D_TOP);
+  let h="";
+  // score panel: band zones
+  h+=`<rect x="${X0}" y="${ys(1)}" width="${X1-X0}" height="${ys(HI_CUT)-ys(1)}" fill="var(--risk-high-tint)"/>`;
+  h+=`<rect x="${X0}" y="${ys(HI_CUT)}" width="${X1-X0}" height="${ys(EL_CUT)-ys(HI_CUT)}" fill="var(--risk-elevated-tint)"/>`;
+  h+=`<line x1="${X0}" y1="${S_BOT}" x2="${X1}" y2="${S_BOT}" stroke="var(--rule)"/>`;
+  h+=`<text x="${X0-8}" y="${ys(1)+4}" text-anchor="end">1.0</text><text x="${X0-8}" y="${ys(HI_CUT)+4}" text-anchor="end">0.7</text><text x="${X0-8}" y="${ys(0)+4}" text-anchor="end">0</text>`;
+  h+=`<text x="${X0+6}" y="${ys(1)+14}">High band</text><text x="${X0+6}" y="${ys(HI_CUT)+14}">Elevated band</text>`;
+  h+=`<text class="lbl" x="${X0}" y="20">Risk score</text>`;
+  h+=`<polyline fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round" points="${view.map(v=>`${xs(v.d).toFixed(1)},${ys(v.score).toFixed(1)}`).join(" ")}"/>`;
+  // deposits panel
+  h+=`<text class="lbl" x="${X0}" y="${D_TOP-14}">Deposits per day</text>`;
+  [0,depMax/2,depMax].forEach(t=>{h+=`<line x1="${X0}" y1="${yd(t)}" x2="${X1}" y2="${yd(t)}" stroke="var(--rule)" ${t?'stroke-dasharray="2 4"':''}/><text x="${X0-8}" y="${yd(t)+4}" text-anchor="end">${t.toLocaleString("en-GB")} €</text>`});
+  const bw=Math.max(1.2,(X1-X0)/Math.max(N,30)*0.7);
+  view.forEach(v=>{if(!v.dep)return;h+=`<rect x="${(xs(v.d)-bw/2).toFixed(1)}" y="${yd(v.dep).toFixed(1)}" width="${bw.toFixed(1)}" height="${(D_BOT-yd(v.dep)).toFixed(1)}" fill="${v.chase?"var(--risk-high)":"var(--ink-soft)"}" ${v.chase?"":'opacity=".55"'}/>`});
+  // x axis
+  const step=N>200?50:N>80?20:10;
+  for(let t=0;t<=N;t+=step)h+=`<text x="${xs(t)}" y="${D_BOT+18}" text-anchor="middle">${t}</text>`;
+  h+=`<text x="${X1}" y="${D_BOT+36}" text-anchor="end">Day since first activity</text>`;
+  // markers
+  const mark=(d,label,color,dash,dy)=>{if(d>N)return "";const x=xs(d);
+    return `<line x1="${x}" y1="${S_TOP-6}" x2="${x}" y2="${D_BOT}" stroke="${color}" stroke-width="1.5" ${dash?`stroke-dasharray="${dash}"`:""}/><text x="${x+5}" y="${S_TOP-6+dy}" style="fill:${color};font-weight:700">${label}</text>`};
+  h+=mark(FIRST_HIGH,`High from day ${FIRST_HIGH}`,"var(--risk-high)","5 3",0);
+  h+=mark(FIRST_RULE,`First rule, day ${FIRST_RULE}`,"var(--ink)","2 3",0);
+  svg.insertAdjacentHTML("beforeend",h);
+}
+
+/* ---------- sessions ---------- */
+const hr=(d,k)=>{const x=Math.sin(d*12.9898+k*78.233)*43758.5453;return x-Math.floor(x)};
+function renderSessions(){
+  const N=Math.min(state.day,LAST);let rows=[],no=Math.round(142*N/120);
+  for(let d=N;d>=0&&rows.length<8;d--){const v=days[d];if(!v.active||!v.dep)continue;
+    const mins=v.chase?140+Math.round(hr(d,1)*80):25+Math.round(hr(d,2)*70),dn=v.chase?3+Math.floor(hr(d,3)*3):1+Math.floor(hr(d,4)*2);
+    const net=v.chase?-Math.round(v.dep*(0.85+hr(d,5)*0.15)):Math.round((hr(d,6)-0.6)*v.dep);
+    const night=hr(d,7)<.3;
+    rows.push(`<tr><td>${v.chase?'<span class="chase" title="Loss-chasing session"></span>':'<span style="display:inline-block;width:14px"></span>'}${no--}</td><td class="r">${d}</td><td class="r">${Math.floor(mins/60)?Math.floor(mins/60)+" h "+(mins%60)+" min":mins+" min"}</td><td class="r">${dn}</td><td class="r">${v.dep.toLocaleString("en-GB")} €</td><td class="r ${net<0?"neg":""}">${net<0?"−":"+"}${Math.abs(net).toLocaleString("en-GB")} €</td><td>${night?"Night (00–06)":"Day"}</td></tr>`)}
+  document.getElementById("srows").innerHTML=rows.join("");
+}
+
+/* ---------- case header follows replay ---------- */
+function renderCaseHead(){
+  const N=Math.min(state.day,LAST),v=days[N];
+  const band=v.score>=HI_CUT?"high":v.score>=EL_CUT?"elevated":"low";
+  document.querySelector("#v-case .scorebox").innerHTML=`${chip(band)}<span class="score">${v.score.toFixed(2)}</span><span class="soft">${band==="high"?"Rank 1 of 100":band==="elevated"?"Rank 14 of 100":"Rank 47 of 100"}</span>`;
+  const sess=Math.round(142*N/120),dep=Math.round(301*N/120),eur=days.slice(0,N+1).reduce((a,b)=>a+b.dep,0);
+  document.getElementById("c-meta").textContent=`Operator P3. Day ${N} of ${LAST+1}. ${sess} sessions and ${dep} deposits so far, ${eur.toLocaleString("en-GB")} € deposited.`;
+  const lead=document.getElementById("c-lead");
+  lead.innerHTML=N<FIRST_HIGH?`<span>Not in the high band yet on day ${N}.</span><span class="soft">Move the replay forward to see when the model flags this player.</span>`
+   :N<FIRST_RULE?`<span>Model flagged high on <strong>day ${FIRST_HIGH}</strong>.</span><span>No fixed rule has fired yet.</span>`
+   :`<span>Model flagged high on <strong>day ${FIRST_HIGH}</strong>.</span><span>First fixed rule fired on <strong>day ${FIRST_RULE}</strong>.</span><span>The model was <strong>${FIRST_RULE-FIRST_HIGH} days earlier</strong>.</span>`;
+}
+
+/* ---------- wiring ---------- */
+function setDay(n){state.day=n;document.getElementById("dayout").value=n;
+  document.querySelectorAll(".dayref").forEach(e=>e.textContent=Math.min(n,LAST));
+  document.querySelectorAll(".dayprev").forEach(e=>e.textContent=Math.max(0,n-1));
+  renderQueue();renderTimeline();renderSessions();renderCaseHead();
+  try{const u=new URL(location.href);u.searchParams.set("day",n);history.replaceState(null,"",u.pathname+u.search+location.hash)}catch(e){}}
+const views=["queue","case","operators","about"];
+function show(v){if(!views.includes(v))v="queue";views.forEach(x=>document.getElementById("v-"+x).hidden=x!==v);
+  document.querySelectorAll(".nav a").forEach(a=>a.toggleAttribute("aria-current",false));
+  const nv=v==="case"?"queue":v;document.querySelector(`.nav a[data-view="${nv}"]`).setAttribute("aria-current","page");}
+document.addEventListener("click",e=>{const a=e.target.closest("[data-view]");if(a){e.preventDefault();show(a.dataset.view);try{history.replaceState(null,"",location.search+"#"+a.dataset.view)}catch(_){}window.scrollTo(0,0)}
+  const tr=e.target.closest("tr.go");if(tr){show("case");try{history.replaceState(null,"",location.search+"#case")}catch(_){}window.scrollTo(0,0)}});
+document.addEventListener("keydown",e=>{const tr=e.target.closest&&e.target.closest("tr.go");if(!tr)return;
+  if(e.key==="Enter"){tr.click()} if(e.key==="j"&&tr.nextElementSibling){tr.nextElementSibling.focus();e.preventDefault()} if(e.key==="k"&&tr.previousElementSibling){tr.previousElementSibling.focus();e.preventDefault()}});
+document.getElementById("op").addEventListener("change",e=>{state.op=e.target.value;renderQueue()});
+const seg=(id,key,attr)=>document.getElementById(id).addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  document.querySelectorAll(`#${id} button`).forEach(x=>x.setAttribute("aria-pressed",x===b));state[key]=b.dataset[attr];renderQueue()});
+seg("bandseg","band","b");seg("statseg","stat","s");
+document.getElementById("blind").addEventListener("click",e=>{state.blind=!state.blind;e.currentTarget.setAttribute("aria-checked",state.blind);renderQueue()});
+const day=document.getElementById("day"),play=document.getElementById("play");let timer=null;
+day.addEventListener("input",()=>setDay(+day.value));
+play.addEventListener("click",()=>{if(timer){clearInterval(timer);timer=null;play.textContent="Play";play.setAttribute("aria-pressed","false");return}
+  play.textContent="Pause";play.setAttribute("aria-pressed","true");if(+day.value>=LAST)day.value=0;
+  timer=setInterval(()=>{const n=+day.value+2;if(n>LAST){play.click();return}day.value=n;setDay(n)},80)});
+document.getElementById("review").addEventListener("submit",e=>{e.preventDefault();const o=document.querySelector('input[name=outcome]:checked');
+  document.getElementById("saved").textContent=o?`Review saved: ${o.value}, day ${Math.min(state.day,LAST)}.`:"Choose an outcome to save the review."});
+
+renderPop();
+let start=120;try{const q=new URLSearchParams(location.search).get("day");if(q!==null&&!isNaN(+q))start=Math.max(0,Math.min(LAST,+q))}catch(e){}
+day.value=start;setDay(start);
+show((location.hash||"#queue").slice(1));
+</script>
