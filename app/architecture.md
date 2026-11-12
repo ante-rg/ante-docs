@@ -115,7 +115,7 @@ Migrations with goose in `api/migrations`. Queries with sqlc in `api/internal/st
 operators      (code text pk, name text, api_key_hash text)
 players        (player_id text pk, operator_code text fk, last_day int, session_count int, deposit_count int)
 models         (model_version text pk, card jsonb, loaded_at timestamptz, is_active bool)
-daily_scores   (model_version, player_id, day int, score real null, reasons jsonb, pk(model_version, player_id, day))
+daily_scores   (model_version, player_id, day int, score real null, reasons jsonb, pk(player_id, model_version, day))
 daily_activity (player_id, day, ...numeric columns..., pk(player_id, day))
 sessions       (player_id, session_no, start_day, ..., pk(player_id, session_no))
 rule_flags     (player_id, day, rule_id, rule_text, pk(player_id, day, rule_id))
